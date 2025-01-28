@@ -1,0 +1,241 @@
+html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新春烟花贺卡</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            pointer-events: none;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin: 30px 0;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        .message {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 500px;
+            backdrop-filter: blur(5px);
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 10px #fff, 0 0 20px #ff0066; }
+            to { text-shadow: 0 0 20px #fff, 0 0 30px #ff0066; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="content">
+        <h1> 恭贺新春 🧨</h1>
+        <div class="message">
+            <p>亲爱的朋友：</p>
+            <p>爆竹声中一岁除，春风送暖入屠苏</p>
+            <p style="color: #ffeb3b;"> 福星高照 </p>
+            <p style="color: #4caf50;">阖家安康  万事胜意 </p>
+            <p>—— 张三 敬贺</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let fireworks = [];
+        let particles = [];
+
+        // 烟花类
+        class Firework {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height;
+                this.targetY = canvas.height * 0.2 + Math.random() * canvas.height * 0.3;
+                this.speed = 3 + Math.random() * 3;
+                this.angle = Math.atan2(this.targetY - this.y, canvas.width/2 - this.x);
+                this.trail = [];
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            }
+
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                
+                // 尾迹效果
+                this.trail.push({x: this.x, y: this.y});
+                if(this.trail.length > 20) this.trail.shift();
+
+                if(this.y <= this.targetY) this.explode();
+            }
+
+            explode() {
+                const types = ['circle', 'spark', 'star'];
+                for(let i = 0; i < 300; i++) {
+                    particles.push(new Particle(
+                        this.x, 
+                        this.y, 
+                        this.color,
+                        types[Math.floor(Math.random() * types.length)]
+                    ));
+                }
+                fireworks.splice(fireworks.indexOf(this), 1);
+            }
+
+            draw() {
+                // 绘制尾迹
+                this.trail.forEach((pos, index) => {
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, 3 * (index/this.trail.length), 0, Math.PI*2);
+                    ctx.fillStyle = this.color;
+                    ctx.globalAlpha = index/this.trail.length;
+                    ctx.fill();
+                });
+
+                // 绘制主体
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 5, 0, Math.PI*2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = 1;
+                ctx.fill();
+            }
+        }
+
+        // 粒子类
+        class Particle {
+            constructor(x, y, color, type) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.type = type;
+                this.angle = Math.random() * Math.PI * 2;
+                this.velocity = {
+                    x: Math.cos(this.angle) * Math.random() * 15,
+                    y: Math.sin(this.angle) * Math.random() * 15
+                };
+                this.alpha = 1;
+                this.gravity = 0.2;
+                this.friction = 0.96;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.velocity.x *= this.friction;
+                this.velocity.y = (this.velocity.y * this.friction) + this.gravity;
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= 0.01;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                
+                switch(this.type) {
+                    case 'spark':
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(
+                            this.x + this.velocity.x * 0.5, 
+                            this.y + this.velocity.y * 0.5
+                        );
+                        ctx.lineWidth = this.size;
+                        ctx.strokeStyle = this.color;
+                        ctx.stroke();
+                        break;
+
+                    case 'star':
+                        ctx.beginPath();
+                        ctx.translate(this.x, this.y);
+                        ctx.rotate(Math.PI / 4);
+                        ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+                        break;
+
+                    default: // circle
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                        ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        // 画布设置
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 动画循环
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 自动发射烟花
+            if(Math.random() < 0.02) fireworks.push(new Firework());
+
+            // 更新绘制烟花
+            fireworks.forEach(firework => {
+                firework.update();
+                addGlow();
+                firework.draw();
+            });
+
+            // 更新绘制粒子
+            particles.forEach((particle, index) => {
+                particle.update();
+                addGlow();
+                particle.draw();
+                if(particle.alpha <= 0) particles.splice(index, 1);
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        // 添加辉光效果
+        function addGlow() {
+            ctx.shadowColor = 'rgba(255,255,255,0.8)';
+            ctx.shadowBlur = 20;
+        }
+
+        // 启动动画
+        animate();
+
+        // 点击交互
+        canvas.addEventListener('click', (e) => {
+            const firework = new Firework();
+            firework.x = e.clientX;
+            firework.y = e.clientY;
+            firework.targetY = e.clientY - 100;
+            fireworks.push(firework);
+        });
+    </script>
+</body>
+</html>
