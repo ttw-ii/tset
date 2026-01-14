@@ -1,0 +1,234 @@
+Sigmoid函数：
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 设置中文字体
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+# 定义Sigmoid函数
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# 定义Sigmoid的导数
+def sigmoid_derivative(x):
+    s = sigmoid(x)
+    return s * (1 - s)
+
+# 创建x轴数据
+x = np.linspace(-10, 10, 1000)
+
+# 计算Sigmoid函数值和导数值
+y_sigmoid = sigmoid(x)
+y_derivative = sigmoid_derivative(x)
+
+# 创建图形
+plt.figure(figsize=(12, 8))
+
+# 绘制Sigmoid函数
+plt.subplot(2, 1, 1)
+plt.plot(x, y_sigmoid, 'b-', linewidth=2, label='Sigmoid函数')
+plt.title('Sigmoid函数', fontsize=14, fontweight='bold')
+plt.xlabel('x', fontsize=12)
+plt.ylabel('f(x)', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend()
+plt.axhline(y=0.5, color='red', linestyle='--', alpha=0.5, label='y=0.5')
+plt.axvline(x=0, color='green', linestyle='--', alpha=0.5, label='x=0')
+plt.legend()
+
+# 绘制Sigmoid导数
+plt.subplot(2, 1, 2)
+plt.plot(x, y_derivative, 'r-', linewidth=2, label='Sigmoid导数')
+plt.title('Sigmoid函数的导数', fontsize=14, fontweight='bold')
+plt.xlabel('x', fontsize=12)
+plt.ylabel("f'(x)", fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend()
+
+# 标记导数的最大值点
+
+# 创建一个合并的图形来更直观地比较
+plt.figure(figsize=(10, 6))
+plt.plot(x, y_sigmoid, 'b-', linewidth=2, label='Sigmoid函数')
+plt.plot(x, y_derivative, 'r-', linewidth=2, label='Sigmoid导数')
+# plt.title('Sigmoid函数及其导数对比', fontsize=14, fontweight='bold')
+plt.xlabel('x', fontsize=12)
+plt.ylabel('函数值', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend()
+
+# 添加一些关键点的标注
+plt.axhline(y=0.5, color='blue', linestyle='--', alpha=0.3)
+plt.axhline(y=0.25, color='red', linestyle='--', alpha=0.3)
+plt.axvline(x=0, color='black', linestyle='--', alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+
+
+Tanh函数：
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 设置中文字体
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+# 定义Tanh函数
+def tanh(x):
+    return np.tanh(x)
+
+# 定义Tanh的导数
+def tanh_derivative(x):
+    return 1 - np.tanh(x)**2
+
+# 创建x轴数据
+x = np.linspace(-4, 4, 1000)
+
+# 计算Tanh函数值和导数值
+y_tanh = tanh(x)
+y_derivative = tanh_derivative(x)
+
+# 创建图形
+plt.figure(figsize=(12, 8))
+
+# 绘制Tanh函数
+plt.subplot(2, 1, 1)
+plt.plot(x, y_tanh, 'b-', linewidth=2, label='Tanh函数')
+plt.title('Tanh函数', fontsize=14, fontweight='bold')
+plt.xlabel('x', fontsize=12)
+plt.ylabel('f(x)', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend()
+plt.axhline(y=0, color='red', linestyle='--', alpha=0.5, label='y=0')
+plt.axvline(x=0, color='green', linestyle='--', alpha=0.5, label='x=0')
+plt.legend()
+
+# 绘制Tanh导数
+plt.subplot(2, 1, 2)
+plt.plot(x, y_derivative, 'r-', linewidth=2, label='Tanh导数')
+plt.title('Tanh函数的导数', fontsize=14, fontweight='bold')
+plt.xlabel('x', fontsize=12)
+plt.ylabel("f'(x)", fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend()
+
+# 标记导数的最大值点
+max_derivative_idx = np.argmax(y_derivative)
+max_derivative_x = x[max_derivative_idx]
+max_derivative_y = y_derivative[max_derivative_idx]
+plt.scatter(max_derivative_x, max_derivative_y, color='red', s=50, zorder=5)
+plt.annotate(f'最大值: ({max_derivative_x:.1f}, {max_derivative_y:.2f})', 
+             xy=(max_derivative_x, max_derivative_y), 
+             xytext=(max_derivative_x+1, max_derivative_y),
+             arrowprops=dict(arrowstyle='->', color='black'))
+
+plt.tight_layout()
+plt.show()
+
+# 创建一个合并的图形来更直观地比较
+plt.figure(figsize=(10, 6))
+plt.plot(x, y_tanh, 'b-', linewidth=2, label='Tanh函数')
+plt.plot(x, y_derivative, 'r-', linewidth=2, label='Tanh导数')
+plt.xlabel('x', fontsize=12)
+plt.ylabel('函数值', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend()
+
+# 添加一些关键点的标注
+plt.axhline(y=0, color='blue', linestyle='--', alpha=0.3)
+plt.axhline(y=1, color='red', linestyle='--', alpha=0.3)
+plt.axvline(x=0, color='black', linestyle='--', alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+
+ReLu激活函数：
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 设置中文字体
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+# 定义ReLU函数
+def relu(x):
+    return np.maximum(0, x)
+
+# 定义ReLU的导数
+def relu_derivative(x):
+    return np.where(x > 0, 1, 0)
+
+# 创建x轴数据
+x = np.linspace(-4, 4, 1000)
+
+# 计算ReLU函数值和导数值
+y_relu = relu(x)
+y_derivative = relu_derivative(x)
+
+# 创建图形
+plt.figure(figsize=(12, 8))
+
+# 绘制ReLU函数
+plt.subplot(2, 1, 1)
+plt.plot(x, y_relu, 'b-', linewidth=2, label='ReLU函数')
+plt.title('ReLU函数', fontsize=14, fontweight='bold')
+plt.xlabel('x', fontsize=12)
+plt.ylabel('f(x)', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend()
+plt.axhline(y=0, color='red', linestyle='--', alpha=0.5, label='y=0')
+plt.axvline(x=0, color='green', linestyle='--', alpha=0.5, label='x=0')
+plt.legend()
+
+# 绘制ReLU导数
+plt.subplot(2, 1, 2)
+plt.plot(x, y_derivative, 'r-', linewidth=2, label='ReLU导数')
+plt.title('ReLU函数的导数', fontsize=14, fontweight='bold')
+plt.xlabel('x', fontsize=12)
+plt.ylabel("f'(x)", fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend()
+
+# 标记导数的特殊点
+plt.scatter(0, 0, color='red', s=50, zorder=5, label='间断点')
+plt.annotate('导数间断点: (0, 0)', 
+             xy=(0, 0), 
+             xytext=(1, 0.2),
+             arrowprops=dict(arrowstyle='->', color='black'))
+plt.annotate('导数在x>0时为1', 
+             xy=(2, 1), 
+             xytext=(2, 0.6),
+             arrowprops=dict(arrowstyle='->', color='black'))
+plt.annotate('导数在x<0时为0', 
+             xy=(-2, 0), 
+             xytext=(-3, 0.4),
+             arrowprops=dict(arrowstyle='->', color='black'))
+
+plt.tight_layout()
+plt.show()
+
+# 创建一个合并的图形来更直观地比较
+plt.figure(figsize=(10, 6))
+plt.plot(x, y_relu, 'b-', linewidth=2, label='ReLU函数')
+plt.plot(x, y_derivative, 'r-', linewidth=2, label='ReLU导数')
+plt.xlabel('x', fontsize=12)
+plt.ylabel('函数值', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend()
+
+# 添加一些关键点的标注
+plt.axhline(y=0, color='blue', linestyle='--', alpha=0.3)
+plt.axhline(y=1, color='red', linestyle='--', alpha=0.3)
+plt.axvline(x=0, color='black', linestyle='--', alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+
+
+
